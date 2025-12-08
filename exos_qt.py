@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Dec  8 16:11:50 2025
+
+@author: qtoul
+"""
+
 from random import randint
 
 liste_classe=["Voleur", "Mage", "Guerrier", "Fermier"]
@@ -13,6 +20,7 @@ force=None
 def perso_rpg():
     """definis un personnage pour le jeu rpg"""
     
+    global pv, force, level
     nom= str(input("Choisissez votre nom : "))
     print(liste_classe)
     selec_classe=(int(input("Choisissez votre classe (selectionnez l'indice de la classe (1-4) : ")))-1
@@ -33,7 +41,7 @@ def perso_rpg():
         classe="Fermier"
         pv=pv_base*4
         force=force_base*0.5
-        
+    
     print(f"Votre personnage est : {nom} \n C'est un {classe} \n Il a {pv} points de vie \n Sa force est de {force}")
     combat_squelette()
 
@@ -46,12 +54,17 @@ def combat_squelette():
         rep=str(input("Voulez vous attaquer ? (y/n) : "))
         if rep =="y":
             pv_squelette-= randint(2, 5)*force
+            print(f"Le Squelette a {pv_squelette}")
+            pv-=1
+            print(f"Le Squelette vous fait 1 dégât, il vous reste {pv}")
         else:
             print("Vous fuyez")
             break
     if pv_squelette<=0:
         print("Vous avez gagné et obtenu 1 niveau")
         level +=1
+        print("Vous gagnez 20pv")
+        pv+=20
     else:
         print("Le squelette a gagné")
 
