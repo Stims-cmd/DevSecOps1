@@ -16,6 +16,7 @@ nom=str
 pv=None
 force=None
 sort=["Boule de feu", "Esquive", "Gel"]
+inventaire=["potion de soin", "or", "potion de force"]
 
 
 
@@ -101,7 +102,7 @@ def combat_golem():
     """combat du golem"""
     global pv, level, force, sort
     print("Vous avez 3 nouveaux sorts : boule de feu (force + 10 dégâts (10% de taux d'echec)), eclair (force+20 (20% d'echec)')), Gel (force * 10 (50% d'echec)'))")
-    pv_golem=1000
+    pv_golem=500
     print(f"Un golem avec {pv_golem} pv apparait")
     while pv_golem>0 and pv>0:
         choix=int(input("Choisissez un sort (1, 2 ou 3) : "))
@@ -115,10 +116,44 @@ def combat_golem():
         print("vous passez niveau 5")
         force*=2.5
         pv+=150
-        print(f"Votre force augmente de 250%, et votre vie de 150pv. Vous avez donc : {force} force et {pv} pv")
+        print(f"Votre force augmente de 250%, et votre  vie de 150pv. Vous avez donc : {force} force et {pv} pv")
     else:
         print("Le golem vous a écrasé")
     print("\n")
+    coffre_piege()
+
+
+def coffre_piege():
+    """coffre piégé"""
+    global pv
+    essai=3
+    while essai>=0:
+        if essai==0:
+            print("Perdu. Le coffre vous inflige 60 dégâts")
+            pv -= 60
+            print(f"Vous avez {pv}")
+            if pv==0:
+                print("Vous êtes mort")
+            break
+        else:
+            code=randint(1, 10)
+            code_joueur=int(input("Entrez un nombre entre 1 et 10 pour ouvrir le coffre : "))
+            if code==code_joueur:
+                inventaire.append("Arme Ultime")
+                print("L'arme ultime a été ajoutée a votre inventaire")
+                break
+            else:
+                if code<code_joueur:
+                    print("Trop haut")
+                else:
+                    print("Trop bas")
+        essai-=1
+    continuer=str(input("Voulez vous essayer de nouveau ? (y/n) "))
+    if continuer=="y":
+        coffre_piege()
+    else:
+        print("Vous partez")
+    
     
     
 if __name__ == "__main__":
