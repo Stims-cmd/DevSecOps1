@@ -15,6 +15,8 @@ classe=None
 nom=str
 pv=None
 force=None
+sort=["Boule de feu", "Esquive", "Gel"]
+
 
 
 def perso_rpg():
@@ -43,6 +45,7 @@ def perso_rpg():
         force=force_base*0.5
     
     print(f"Votre personnage est : {nom} \n C'est un {classe} \n Il a {pv} points de vie \n Sa force est de {force}")
+    print("\n")
     combat_squelette()
 
 def combat_squelette():
@@ -63,10 +66,60 @@ def combat_squelette():
     if pv_squelette<=0:
         print("Vous avez gagné et obtenu 1 niveau")
         level +=1
-        print("Vous gagnez 20pv")
         pv+=20
+        print(f"Vous gagnez 20pv, vous avez donc {pv} pv")
     else:
         print("Le squelette a gagné")
+    force*=1.2
+    pv*=1.5
+    print(f"Votre force augmente de 20%, et votre vie de 50%. Vous avez donc : {force} force et {pv} pv")
+    print("\n")
+    combat_golem()
 
+def sort(choix, pv_ennemie):
+    """choix du sort"""
+    global force
+    if choix==1:
+        if randint(1, 100)<=10:
+            print("Echec du sort")
+        else:
+            pv_ennemie-= force + 10
+    elif choix==2:
+        if randint(1, 100)<=20:
+            print("Echec du sort")
+        else:
+            pv_ennemie-= force + 20
+    else:
+        if randint(1, 100)<=50:
+            print("Echec du sort")
+        else:
+            pv_ennemie-= force*10
+    return pv_ennemie
+        
+    
+def combat_golem():
+    """combat du golem"""
+    global pv, level, force, sort
+    print("Vous avez 3 nouveaux sorts : boule de feu (force + 10 dégâts (10% de taux d'echec)), eclair (force+20 (20% d'echec)')), Gel (force * 10 (50% d'echec)'))")
+    pv_golem=1000
+    print(f"Un golem avec {pv_golem} pv apparait")
+    while pv_golem>0 and pv>0:
+        choix=int(input("Choisissez un sort (1, 2 ou 3) : "))
+        pv_golem= sort(choix, pv_golem)
+        print(f"Le golem a encore {pv_golem}")
+        degat_golem=5
+        pv-=5
+        print(f"Le golem vous fait 5 dégâts. Il vous reste {pv}")
+    if pv_golem<=0:
+        print("Vous avez gagné")
+        print("vous passez niveau 5")
+        force*=2.5
+        pv+=150
+        print(f"Votre force augmente de 250%, et votre vie de 150pv. Vous avez donc : {force} force et {pv} pv")
+    else:
+        print("Le golem vous a écrasé")
+    print("\n")
+    
+    
 if __name__ == "__main__":
     perso_rpg()   
