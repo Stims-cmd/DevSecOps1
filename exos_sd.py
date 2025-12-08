@@ -95,6 +95,34 @@ def sort_golem():
                 print("Le golem est mort, mais vous aussi...")
         else:
             Golem_vivant=True
+    coffre()
+
+def coffre():
+
+    Choix=True
+    while Choix==True:
+        selec_nombre=(int(input("Choisissez un nombre entre 1 et 20 : ")))
+        Score_Arme=rd.randint(1, 20)
+        for i in range(3):
+            if selec_nombre>Score_Arme:
+                print("Trop Haut")
+                Choix=True
+            elif selec_nombre<Score_Arme:
+                print("Trop bas")
+                Choix=True
+            elif selec_nombre==Score_Arme:
+                print("BRAVO ! Tu as gagné l'ARME ULTIME")
+                arme=True
+                Choix=False
+            else:
+                print("J'ai dis entre 1 et 20 mec...")
+        if arme==True:
+            inventaire()
+        else:
+            print("Vous perdez vos pièces d'or !")
+    
+def inventaire():
+    print("Voici ton inventaire : \n - Arme Ultime \n - 20 Pièces d'or \n")
            
     
 
