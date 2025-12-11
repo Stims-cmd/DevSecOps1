@@ -1,136 +1,137 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon Dec  8 16:11:50 2025
-
-@author: qtoul
+Optimisation du RPG
 """
 
-from random import randint
-import random as rd
+from random import randint, choice
 
-liste_classe=["Voleur", "Mage", "Guerrier", "Fermier"]
-liste_sort=["Coup d'épée (1)", "Lancer de dague (2)", "Boule de feu (3)"]
+# Données du jeu
+CLASSES = {
+    1: ("Voleur",   1.2, 0.9),
+    2: ("Mage",     1.0, 1.5),
+    3: ("Guerrier", 3.0, 2.0),
+    4: ("Fermier",  4.0, 0.5)
+}
 
-level=1
-pv_base=10
-force_base=10
-classe=None
-nom=str
-pv=None
-force=None
-sort=None
-Golem_vivant=True
+SORTS = {
+    1: ("Coup d'épée",      lambda: randint(10, 14)),
+    2: ("Lancer de dague",  lambda: randint(2, 22)),
+    3: ("Boule de feu",     lambda: choice([0, 20]))
+}
 
 
 def perso_rpg():
-    """definis un personnage pour le jeu rpg"""
-    
-    global pv, force, level
-    nom= str(input("Choisissez votre nom : "))
-    print(liste_classe)
-    selec_classe=(int(input("Choisissez votre classe (selectionnez l'indice de la classe (1-4) : ")))-1
-    
-    if selec_classe==0:
-        classe="Voleur"
-        pv=pv_base*1.2
-        force=force_base*0.9
-    elif selec_classe==1:
-        classe="Mage"
-        pv=pv_base*1
-        force=force_base*1.5
-    elif selec_classe==2:
-        classe="Guerrier"
-        pv=pv_base*3
-        force=force_base*2
-    else:
-        classe="Fermier"
-        pv=pv_base*4
-        force=force_base*0.5
-    
-    print(f"Votre personnage est : {nom} \n C'est un {classe} \n Il a {pv} points de vie \n Sa force est de {force}. \n")
-    choix_combat()
+    """Création du personnage"""
+    pv_base = 10
+    force_base = 10
 
-def choix_combat():
-    rep=str(input("Voulez vous attaquer ? (y/n) : "))
-    if rep =="y":
-        sort_golem()
+    nom = input("Choisissez votre nom : ")
+
+    for i, (c, _, _) in CLASSES.items():
+        print(f"{i} - {c}")
+
+    # Sélection classe sécurisée
+    while True:
+        try:
+            choix = int(input("Choisissez votre classe (1-4) : "))
+            if choix in CLASSES:
+                break
+        except ValueError:
+            pass
+        print("Veuillez entrer un nombre entre 1 et 4.")
+
+    classe, pv_mult, force_mult = CLASSES[choix]
+
+    pv = pv_base * pv_mult
+    force = force_base * force_mult
+
+    print(f"\nVotre personnage est : {nom}")
+    print(f"Classe : {classe}")
+    print(f"PV : {pv}")
+    print(f"Force : {force}\n")
+
+    choix_combat(pv, force)
+
+
+def choix_combat(pv, force):
+    rep = input("Voulez-vous attaquer ? (y/n) : ").lower()
+    if rep == "y":
+        combat_golem(pv, force)
     else:
         print("Vous fuyez... (Sale merde)")
-        
-
-def sort_golem():
-
-    global pv, level, force, Golem_vivant
-    pv_squelette=50
-    print(liste_sort)
-    while Golem_vivant==True:
-        selec_sort=(int(input("Choisissez votre sort (1-3) : ")))-1
-        if selec_sort==0:
-            sort="Coup d'épée"
-            Cde=randint(10, 14)
-            pv_squelette-=Cde
-            Degat=Cde
-        elif selec_sort==1:
-            sort="Lancer de dague"
-            Ldg=randint(2, 22)
-            pv_squelette-=Ldg
-            Degat=Ldg
-        elif selec_sort==2:
-            sort="Boule de feu"
-            Bdf=rd.choice([0, 20])
-            pv_squelette-=Bdf
-            Degat=Bdf
-        else:
-            print("OUPS ! Veuillez choisir un nombre entre 1 et 3 pour séléctionner votre sort !")
-        
-        pv-=7
-        print(f"Les sort utilisé est {sort}. \n Vous avez fait {Degat} dégâts. \n Le Golem a maintenant {pv_squelette} PV. \n Le golem vous inflige 7 dégâts. \n Vous avez maintenant {pv} PV. \n")
 
 
-        if pv_squelette<=0:
-            Golem_vivant=False
-            if pv>1:
-                print("BRAVO ! Vous avez sauver le village !")
-                coffre()
-            else:
-                print("Le golem est mort, mais vous aussi...")
-        else:
-            Golem_vivant=True
-    
+def combat_golem(pv, force):
+    pv_golem = 50
+
+    print("\n--- LISTE DES SORTS ---")
+    for i, (nom_sort, _) in SORTS.items():
+        print(f"{i} - {nom_sort}")
+
+    while pv_golem > 0 and pv > 0:
+
+        # Choix sort sécurisé
+        while True:
+            try:
+                choix = int(input("\nChoisissez votre sort (1-3) : "))
+                if choix in SORTS:
+                    break
+            except ValueError:
+                pass
+            print("Choix invalide.")
+
+        nom_sort, degats_fct = SORTS[choix]
+        degats = degats_fct()
+        pv_golem -= degats
+        pv -= 7
+
+        print(f"\nVous utilisez : {nom_sort}")
+        print(f"Dégâts infligés : {degats}")
+        print(f"PV restants du golem : {pv_golem}")
+        print(f"Il vous inflige 7 dégâts. Vos PV : {pv}")
+
+    if pv_golem <= 0:
+        print("\nBRAVO ! Vous avez sauvé le village !")
+        coffre()
+    else:
+        print("\nLe golem est mort, mais vous aussi...")
+
 
 def coffre():
+    score = randint(1, 20)
+    tentatives = 4
 
-    Choix=True
-    i=0
-    Score_Arme=int(rd.randint(1, 20))
-    
-    while Choix==True:
-        selec_nombre=(int(input("Choisissez un nombre entre 1 et 20 : ")))
-        
-        if i<4:
-            if selec_nombre>Score_Arme:
-                print("Trop Haut \n")
-                Choix=True
-                i=i+1
-            elif selec_nombre<Score_Arme:
-                print("Trop bas \n")
-                Choix=True
-                i=i+1
-            elif selec_nombre==Score_Arme:
-                print("BRAVO ! Tu as gagné l'ARME ULTIME \n")
-                Choix=False
-                inventaire()
-            else:
-                print("J'ai dis entre 1 et 20 mec... \n")
+    print("\nVous trouvez un coffre !")
 
+    while tentatives > 0:
+        try:
+            choix = int(input("Choisissez un nombre entre 1 et 20 : "))
+        except ValueError:
+            print("Ce n'est pas un nombre !")
+            continue
+
+        if choix < 1 or choix > 20:
+            print("Entre 1 et 20 j'ai dit...")
+            continue
+
+        tentatives -= 1
+
+        if choix > score:
+            print("Trop haut !\n")
+        elif choix < score:
+            print("Trop bas !\n")
         else:
-            print("Vous perdez vos pièces d'or ! \n")
-            Choix=False
-    
+            print("\nBRAVO ! Tu as gagné l'ARME ULTIME !")
+            return inventaire()
+
+    print("Vous perdez vos pièces d'or...")
+
+
 def inventaire():
-    print("Voici ton inventaire : \n - Arme Ultime \n - 20 Pièces d'or \n")
-           
-    
+    print("\nVoici ton inventaire :")
+    print(" - Arme Ultime")
+    print(" - 20 pièces d'or\n")
+
 
 if __name__ == "__main__":
-    perso_rpg()   
+    perso_rpg()
